@@ -179,7 +179,7 @@ screen and (max-width: 740px) {
     }
 
     #menusub {
-        background-color: #1B2867;
+        background-color: var(--nav-bg);
         width: 100%;
         padding-top: 0px;
         display: none;
@@ -194,12 +194,17 @@ screen and (max-width: 740px) {
     }
 
     #menusub a {
-        color: #FFFFFF;
+        color: var(--nav-ink);
         background-color: transparent;
         font-size: 14px;
         text-align: left;
         padding: 7px 10px 7px 10px;
         display: block;
+    }
+
+    #menusub a:hover {
+        color: #ffffff;
+        background-color: var(--nav-hover);
     }
 
 
