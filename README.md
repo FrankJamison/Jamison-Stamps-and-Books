@@ -1,149 +1,303 @@
-# Jamison Stamps & Books (2025 site)
 
-Static business website for Jamison Enterprises Stamps & Books.
+# Jamison Stamps & Books — 2026 website refresh
 
-This repo is mostly “plain HTML + CSS + JavaScript” (no build step). Pages share a common header/menu/footer/sidebar via small JavaScript include files that write HTML into the page. The stamps catalog page (`stamps/USA.htm`) is a client-side app that renders a large stamp inventory list from a JavaScript data array and integrates with PayPal’s cart.
+I built and maintain this repo as a **real-world, production static site** for Jamison Stamps & Books. It’s designed to be easy to host, easy to update, and friendly to collectors on phones, tablets, and desktops — without introducing a build pipeline or framework.
 
-## Tech stack
+If you’re an employer, recruiter, or developer reviewing this project: this README focuses on **implementation details and engineering decisions** (architecture, accessibility, SEO, performance tradeoffs, and how to extend the site).
 
-- **HTML/CSS**: Hand-authored static pages + a shared template stylesheet.
-- **JavaScript**:
-	- Site-wide template scripts (header/menu/footer/sidebar/calendar/contact).
-	- A small jQuery utility file for the mobile menu toggle and the “scroll to top” arrow.
-	- A standalone vanilla-JS catalog renderer for the stamp inventory.
-- **Third-party**:
-	- **jQuery 1.11.3**: `JQuery/jquery-1.11.3.min.js` (used by `js/javascripts.js`).
-	- **PayPal Cart (NCP)**: loaded from `https://www.paypalobjects.com/ncp/cart/cart.js` on the stamps page.
-	- `JQuery/jquery.simplePagination.js` exists in the repo but is not currently used by the stamps page (pagination is implemented in `stamps/js/stamps_v3.js`).
+## What this project demonstrates
 
-## Project layout (high level)
+- Shipping a maintainable **zero-build** site (no bundler, no framework) with sensible structure.
+- Building a data-driven “mini-app” (the stamps catalog) using **vanilla JavaScript**.
+- Practical accessibility improvements (landmarks, skip links, form semantics, ARIA where it matters).
+- SEO fundamentals (canonical URLs, Open Graph/Twitter cards, `robots.txt`, `sitemap.xml`).
+- A pragmatic approach to legacy/template code: keep it stable, modernize carefully, and document constraints.
 
-Key files/folders:
+## Live / local
 
-- `index.html`: Homepage.
-- `about.htm`, `contact.htm`, `resources.htm`, `testimonials.htm`, `site_map.htm`, `thanks*.htm`: Content pages.
-- `css/style.css`, `css/media-queries.css`: Global styling + responsive overrides.
-- `js/`:
-	- `header.js`: Injects the site header + logo.
-	- `menu.js`: Injects the navigation links + mobile “hamburger” icon.
-	- `footer.js`: Injects the footer and the “scroll to top” anchor.
-	- `sidebar.js`: Injects the site-wide sidebar topic box.
-	- `calendar.js`: Injects a small month calendar widget.
-	- `contact.js`: Injects the contact/address block used on some pages.
-	- `javascripts.js`: jQuery behaviors (scroll-to-top + mobile menu toggling/click-away).
-- `picts/`: Images.
-- `stamps/`: Stamps catalog mini-site (own `css/` and `js/`).
-	- `stamps/USA.htm`: Catalog page (filters/sort/pagination + PayPal cart).
-	- `stamps/css/stamps.css`: Catalog-specific styling.
-	- `stamps/js/stamps_v3.js`: Inventory data + filter/sort/pagination + PayPal Add-to-Cart integration.
-
-## How pages are composed (template-style “includes”)
-
-Most pages follow the same pattern as `index.html`:
-
-1. Load the global stylesheet(s).
-2. Load jQuery and `js/javascripts.js` (site behaviors).
-# Jamison Stamps & Books (2025)
-
-This repository contains the 2025 version of the Jamison Stamps & Books website.
-
-It’s intentionally simple and production-friendly: **static HTML + CSS + JavaScript** with no build step. Common page sections (header/nav/footer/sidebar) are shared via lightweight JavaScript “includes”, and the U.S. stamps catalog is a client-side, data-driven page with PayPal cart integration.
-
-## Highlights (what I’m proud of)
-
-- **Zero-build static site**: easy to host and maintain.
-- **Shared layout without duplication**: header/menu/footer/sidebar are injected consistently across pages.
-- **Stamps catalog UX**: client-side filter/search/sort/pagination for a large inventory dataset.
-- **Performance-minded PayPal integration**: add-to-cart initialization is lazy so the page stays responsive.
-- **SEO + accessibility improvements**:
-  - Landmarks (`<header>`, `<nav>`, `<main>`, `<aside>`, `<footer>`), skip links, improved form semantics.
-  - Canonicals + Open Graph/Twitter tags on core pages.
-  - `robots.txt` + `sitemap.xml` included.
+- Production: https://jamisonstamps.com/
+- Local (this workspace): `http://2025jamisonstamps.localhost/`
 
 ## Tech stack
 
-- **HTML/CSS**: hand-authored pages + shared global styles.
+This is intentionally “boring” technology — by design.
+
+- **HTML**: hand-authored pages, semantic landmarks.
+- **CSS**: global theme + responsive media queries.
 - **JavaScript**:
-  - Shared layout scripts in `js/` (header/menu/footer/sidebar/calendar/contact).
-  - Small jQuery behaviors in `js/javascripts.js` (mobile menu + scroll-to-top).
-  - Catalog logic + inventory data in `stamps/js/USA.js`.
-- **Third-party**:
-  - **jQuery 1.11.3** (`JQuery/jquery-1.11.3.min.js`).
-  - **PayPal Cart (NCP)** (`https://www.paypalobjects.com/ncp/cart/cart.js`) on the stamps page.
+	- Shared layout “includes” (header/menu/footer/sidebar/calendar/contact).
+	- Small jQuery behaviors for the mobile menu and scroll-to-top.
+	- Stamps catalog renderer (filters, sorting, pagination, PayPal add-to-cart).
 
-## Project layout
+### Third-party / external services
 
-- Core pages: `index.html`, `about.htm`, `contact.htm`, `resources.htm`, `site_map.htm`
-- Utility/noindex pages: `missing.html`, `thanks.htm`, `thanks-payment.htm`
-- Global styles: `css/style.css`, `css/media-queries.css`
-- Shared scripts: `js/`
-- Images: `picts/`
-- Stamps mini-site:
-  - Page: `stamps/USA.htm`
-  - Styles: `stamps/css/stamps.css`
-  - Logic + data: `stamps/js/USA.js`
+- **jQuery 1.11.3** (`JQuery/jquery-1.11.3.min.js`) — used only for a couple of UI behaviors.
+- **PayPal Cart (NCP)** (`https://www.paypalobjects.com/ncp/cart/cart.js`) — used on the stamps catalog.
+- **Formspree** — handles contact form submissions (`contact.htm`).
 
-## How pages are composed (shared “includes”)
+## Repository structure
 
-Most pages load shared sections via `<script src="./js/header.js"></script>` style includes. Those scripts output HTML into the page (template-style) so I don’t have to copy/paste the same header/menu/footer into every file.
+At a high level:
 
-Important note: these scripts write markup during initial parsing, so they should not be deferred.
+```
+/
+	index.html
+	about.htm
+	contact.htm
+	resources.htm
+	site_map.htm
+	sitemap.xml
+	robots.txt
 
-## The U.S. stamps catalog
+	css/
+		style.css
+		media-queries.css
 
-The catalog lives at `stamps/USA.htm` and is rendered client-side by `stamps/js/USA.js`.
+	js/
+		header.js
+		menu.js
+		footer.js
+		sidebar.js
+		calendar.js
+		contact.js
+		javascripts.js
 
-At a high level, it:
+	stamps/
+		USA.htm
+		css/stamps.css
+		js/USA.js
 
-1. Uses a JavaScript `stamps` array as the inventory.
-2. Filters by Scott # text search and dropdown selections.
-3. Sorts by Scott # or price.
-4. Paginates the results and renders each item as a stamp “card/row”.
+	extras/
+		(historical samples / reference files)
+```
 
-### PayPal cart integration
+### Why the `stamps/` folder is separate
 
-The page loads PayPal’s cart SDK and renders add-to-cart buttons per item. PayPal initialization is done lazily (via `IntersectionObserver`) so only items that scroll into view incur setup work.
+The stamps catalog behaves more like a small application than a brochure page:
+
+- It renders a large inventory list from a JavaScript dataset.
+- It provides filters + sorting + pagination.
+- It integrates with a hosted commerce widget (PayPal cart).
+
+Keeping it in `stamps/` lets it evolve without complicating the rest of the site.
+
+## Design system and UX decisions
+
+### Visual theme ("paper + ink + postal accents")
+
+The global theme is driven by CSS variables in `css/style.css` to keep colors consistent:
+
+- Surfaces are dark “desk/paper” tones for contrast and readability.
+- Accent colors mimic postal ink (blue/red) and a subtle “postmark” underline for headings.
+- Components use soft borders/shadows to keep the site readable without heavy images.
+
+### Responsive layout
+
+Responsive behavior lives in `css/media-queries.css` and is organized into breakpoint “stages”. Key behaviors:
+
+- Navigation switches to a mobile menu at ~740px.
+- Typography and spacing tighten at smaller widths.
+- Sidebar stacks below the main content on mobile for better reading flow.
+
+### Content structure
+
+Pages consistently use:
+
+- `<header>`, `<nav>`, `<main>`, `<aside>`, `<footer>` landmarks.
+- A top “image bar” that sets context per page.
+- A left main content area with a right sidebar (collapses on mobile).
+
+## Architecture: how the pages are composed
+
+This repo avoids copy/pasting shared HTML across multiple pages by using lightweight JavaScript “includes”.
+
+### Shared layout scripts
+
+There are two sets of shared layout scripts:
+
+- Main site includes under `js/` (used by `index.html`, `about.htm`, `contact.htm`, etc.)
+- Stamps subsite includes under `stamps/js/` (used by `stamps/USA.htm`)
+
+Main site shared layout scripts:
+
+- `js/header.js` — writes the site header/logo.
+- `js/menu.js` — writes primary navigation + the mobile menu button.
+- `js/footer.js` — writes the footer + the scroll-to-top anchor.
+- `js/sidebar.js` — writes a global “website topics” sidebar block.
+- `js/calendar.js` — writes the month calendar widget.
+- `js/contact.js` — writes the contact/address block.
+
+These scripts use `document.write()` so the shared markup appears in the correct spot during initial parsing.
+
+Tradeoff (intentional): `document.write()` is old-school, but it’s reliable for a no-build static site and keeps the pages simple to edit.
+
+### Subfolder-safe URLs
+
+For the main site includes, the scripts compute a `basePath` based on the current URL path so the same header/menu/footer work from:
+
+- the site root (`/`)
+- `stamps/` pages
+- `extras/` pages
+
+This avoids maintaining separate nav/header copies for subfolders.
+
+The stamps subsite scripts under `stamps/js/` use explicit relative links (for example `../index.html`).
+
+## Accessibility
+
+Accessibility improvements are implemented directly in markup/CSS, not via a framework:
+
+- **Skip link** (`.skip-link`) to jump to `#maincontent`.
+- **Screen-reader-only utility** (`.sr-only`) used for form and control labels.
+- **Navigation semantics (main site pages)**: the primary menu is written as `<nav aria-label="Primary">`.
+- **Mobile menu ARIA (main site pages)**: `aria-controls` + `aria-expanded` are updated when toggling the menu.
+- **Forms**: explicit `<label for=...>` associations and a `<fieldset><legend>` for grouped radio controls.
+
+Note: the stamps subsite menu is older template markup; one future improvement would be bringing it into parity with the main site’s button/ARIA approach.
+
+## SEO and social sharing
+
+Core pages include:
+
+- `meta name="description"` and keyword targeting.
+- Canonical URLs (`<link rel="canonical" ...>`).
+- Open Graph + Twitter card metadata.
+
+Crawl management:
+
+- `robots.txt` disallows non-content/utility pages (`/extras/`, thank-you pages, etc.).
+- `sitemap.xml` is present for search engines.
+- `site_map.htm` is a human-readable “site map” page.
+
+## JavaScript behavior details
+
+### Site-wide behavior (`js/javascripts.js`)
+
+This file contains small progressive enhancements:
+
+- Scroll-to-top affordance (shows after the user scrolls).
+- Mobile menu toggle.
+- Click-away-to-close behavior for the mobile menu under ~740px.
+
+This is intentionally small and isolated so that most pages remain stable, cacheable, and easy to reason about.
+
+## The stamps catalog (data-driven page)
+
+The catalog is implemented as a client-side renderer:
+
+- Page: `stamps/USA.htm`
+- Logic + dataset: `stamps/js/USA.js`
+- Styles: `stamps/css/stamps.css`
+
+### Data model
+
+Each inventory item is represented as an object with:
+
+- `scott` (string): Scott catalog identifier (supports prefixes/suffixes like `C115`, `219D`, etc.).
+- `condition`, `hinged`, `gum`, `grade` (strings): filterable attributes.
+- `price` (number): used for sorting.
+- `location` (string): internal inventory locator.
+- `paypalId` (string): PayPal add-to-cart button id.
+
+### Filtering + sorting
+
+The UI supports:
+
+- Text search by Scott number (debounced input).
+- Dropdown filters for condition/hinging/gum/grade.
+- Sorting by Scott number and price.
+
+Scott sorting is implemented with a robust key function that splits identifiers into:
+
+- prefix letters
+- numeric portion
+- suffix letters
+
+This produces “collector-correct” ordering across mixed IDs.
+
+### Pagination
+
+The catalog renders one page at a time (configurable via `PAGE_SIZE`) and generates **two pagers**:
+
+- A top pager (above the results)
+- A bottom pager (below the results)
+
+Each pager includes:
+
+- First/Prev/Next/Last
+- Current page indicator
+- A numeric “Jump to page” input
+
+### PayPal integration (performance-minded)
+
+Each stamp row contains a `<paypal-add-to-cart-button>`.
+
+To keep the page responsive with a large list:
+
+- PayPal add-to-cart initialization is done **lazily** using `IntersectionObserver`.
+- There’s a safe fallback path when `IntersectionObserver` isn’t supported.
+- A small `whenPaypalReady()` helper waits for `cartPaypal` to be available.
+
+## Contact form
+
+The contact form on `contact.htm` posts to Formspree and then redirects to a thank-you page.
+
+Implementation details:
+
+- Uses HTML5 input types (`email`, `tel`) and autocomplete hints.
+- Uses required fields + a confirm-email field.
+- Uses a `<fieldset>` for the “Contact regarding” radio group.
 
 ## Running locally
 
-Because this includes third-party scripts (PayPal), it’s best to serve over HTTP rather than opening files directly.
+Because the site depends on external scripts (PayPal) and browser security restrictions apply to `file://` URLs, run it through an HTTP server.
 
-### Option A: Use the VS Code task
+### Option A — VS Code task
 
-This workspace includes a task that opens:
+This workspace has a task labeled **Open in Browser** which opens:
 
 - `http://2025jamisonstamps.localhost/`
 
-Run task: **Open in Browser**
+### Option B — any static server
 
-### Option B: Any static server
-
-Use any local static web server and point it at the repo root.
-
-Examples:
+From repo root:
 
 ```bash
-# Python
 python -m http.server 8080
-
-# Node (if you have it installed)
-npx serve .
 ```
 
-## SEO and crawl control
+Then open `http://localhost:8080/`.
 
-- Sitemap: `sitemap.xml`
-- Robots: `robots.txt`
-- `/extras/` is intentionally excluded from indexing.
+## How to update content safely
 
-## Maintenance tips
+### Adding a new page
 
-- Header/logo: `js/header.js`
-- Navigation: `js/menu.js`
-- Footer: `js/footer.js`
-- Inventory updates: `stamps/js/USA.js`
+I follow the existing page pattern:
 
-## Notes
+1. Include `css/style.css` and `css/media-queries.css`.
+2. Include jQuery + `js/javascripts.js` (for mobile menu + scroll-to-top).
+3. Inject shared sections with `js/header.js`, `js/menu.js`, and `js/footer.js`.
+4. Wrap main content in `<main id="maincontent">` so the skip link works.
 
-- Some legacy template files include vendor notices. I keep those intact when the files are used.
-	 - Sorts by Scott or price.
+### Updating navigation
+
+- Edit `js/menu.js` (root site navigation).
+- The stamps pages have their own menu include under `stamps/js/`.
+
+### Updating the stamp inventory
+
+- Edit the dataset in `stamps/js/USA.js`.
+- Each item needs a unique `paypalId` matching PayPal’s configuration.
+
+## Notes on legacy/template code
+
+Some files originated from a legacy site template and include vendor notices. I keep those notices intact and treat that code as “stable foundation,” then layer my changes on top (theme variables, accessibility fixes, SEO metadata, and the catalog renderer).
+
+## Next improvements I’d consider
+
+If I were expanding this further, I’d likely:
+
+- Replace `document.write()` includes with a small compile step or server-side includes.
+- Reduce dependency on jQuery (it’s only used for a few behaviors).
+- Add a lightweight image optimization pass and ensure all decorative images have intentional alt behavior.
+- Add a simple content checklist for non-developers updating pages.
