@@ -1,0 +1,412 @@
+/* WARNING: USE CAUTION WHEN EDITING THIS FILE */
+
+/* NOTE: THIS FILE INCLUDES 5 STAGES OF MEDIA QUERIES - SEE help.html */
+
+/* NOTE: TO EDIT COLORS - SEE style.css */
+
+/* CLASSES HERE CAN ALSO BE FOUND IN THE style.css */
+
+
+
+
+
+
+/***************
+START Media Queries #1 -  UNHIDE MENU ON RESIZE - SEE ALSO 740 WIDTH IN javascripts.js
+***************/
+@media only screen and (min-width: 741px) and (max-width: 10000px) {
+
+
+    #menusub {
+        display: block !important;
+    }
+
+
+}
+
+/***************
+END Media Queries #1
+***************/
+
+
+
+
+
+
+/***************
+START Media Queries #2 WHEN PAGE WIDTH LESS THAN 890 IS ACTIVE (FOR TABLET)
+***************/
+@media handheld and (max-width: 890px),
+screen and (max-device-width: 890px),
+screen and (max-width: 890px) {
+
+
+
+
+    body {
+        font-size: 14px;
+        line-height: 160%;
+    }
+
+    .logo-respond {
+        width: 100%;
+        height: auto;
+    }
+
+    .floatlist {
+        width: 100%;
+    }
+
+    #menusub a {
+        font-size: 13px;
+        padding: 13px 11px 13px 11px;
+    }
+
+
+
+
+}
+
+/***************
+END Media Queries #2
+***************/
+
+
+
+
+
+
+/***************
+START Media Queries #3 WHEN PAGE WIDTH LESS THAN 740 IS ACTIVE
+***************/
+@media handheld and (max-width: 740px),
+screen and (max-device-width: 740px),
+screen and (max-width: 740px) {
+
+
+
+
+    .title {
+        font-size: 20px;
+    }
+
+    #contentdiv {
+        margin-right: 0px;
+    }
+
+    #maincontent {
+        float: none;
+    }
+
+    .content-pad {
+        padding: 12px 12px 12px 12px;
+    }
+
+
+
+    /* MQS TEXT & GRAPHIC LOGO */
+
+    #headerdiv {
+        padding: 0px 0px 0px 0px;
+    }
+
+    .text-logo-box {
+        padding: 15px 5px 15px 5px;
+    }
+
+    .logo {
+        font-size: 25px;
+    }
+
+    .logo2 {
+        font-size: 25px;
+    }
+
+
+
+    #sidebar {
+        width: 250px;
+        float: none;
+        margin: 0 auto;
+        padding: 10px 20px 0px 20px;
+        border-left: #C5CBD4 0px solid;
+    }
+
+
+
+    /* SOCIAL ICONS */
+
+    .soc-box {
+        position: absolute;
+        top: 7px;
+        right: 5px;
+    }
+
+    .socialspace {
+        padding-left: 1px;
+        padding-right: 0px;
+    }
+
+    .socialicon {
+        width: 18px;
+        height: auto;
+        border: #FFFFFF 0px solid;
+        display: block;
+    }
+
+
+
+    /* MENU #2 menu-2.js */
+
+    #menu2div {
+        display: none;
+    }
+
+
+
+    /* MOBILE MENU */
+
+    .menu-footer {
+        height: 0px;
+    }
+
+    .menu-footer #menudiv {
+        display: none;
+    }
+
+    #mobile-menu-icon {
+        display: block;
+    }
+
+    #menusub {
+        background-color: #1B2867;
+        width: 100%;
+        padding-top: 0px;
+        display: none;
+        position: absolute;
+        top: 38px;
+        left: 0px;
+        z-index: 1050;
+        /* DROP SHADOW */
+        -moz-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.20);
+        -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.20);
+        box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.20);
+    }
+
+    #menusub a {
+        color: #FFFFFF;
+        background-color: transparent;
+        font-size: 14px;
+        text-align: left;
+        padding: 7px 10px 7px 10px;
+        display: block;
+    }
+
+
+    /* SUB MENU CORNER ROUNDING */
+
+    #menusub,
+    #menusub a:first-child {
+        -moz-border-radius-topleft: 0px;
+        -moz-border-radius-topright: 0px;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-width: 0px 0px 0px 0px;
+    }
+
+    #menusub,
+    #menusub a:last-child {
+        -moz-border-radius-bottomright: 6px;
+        -moz-border-radius-bottomleft: 6px;
+        border-bottom-right-radius: 6px;
+        border-bottom-left-radius: 6px;
+        border-width: 0px 0px 0px 0px;
+    }
+
+
+
+
+}
+
+/***************
+END Media Queries #3
+***************/
+
+
+
+
+
+
+/***************
+START Media Queries #4 -  WHEN PAGE WIDTH LESS THAN 482 IS ACTIVE
+                      CLASSES HERE CAN ALSO BE FOUND IN THE style.css
+***************/
+@media handheld and (max-width: 482px),
+screen and (max-device-width: 482px),
+screen and (max-width: 482px) {
+
+
+
+
+    /* MQS FONTS - NEXT LINE IS DEFAULT MOBILE FONT ALL PAGES */
+
+    body {
+        font-size: 13px;
+        line-height: 150%;
+    }
+
+    .title {
+        font-size: 17px;
+    }
+
+    .subtitle {
+        font-size: 15px;
+    }
+
+    .smalltext {
+        font-size: 12px;
+    }
+
+    .just {
+        text-align: left;
+    }
+
+
+
+
+    /* MQS GENERAL */
+
+    .hidemobile {
+        display: none;
+    }
+
+    .splits-xtramargin {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+
+
+
+
+    /* MQS PAGE & CONTENT HEIGHTS, PADDING & WIDTHS */
+
+    .pageheight {
+        min-height: 50px;
+    }
+
+    .content-pad {
+        padding: 12px 12px 12px 12px;
+    }
+
+
+
+
+    /* MQS TEXT & GRAPHIC LOGO */
+
+    #headerdiv {
+        padding: 0px 0px 0px 0px;
+    }
+
+    .text-logo-box {
+        padding: 15px 5px 15px 5px;
+    }
+
+    .logo {
+        font-size: 19px;
+    }
+
+    .logo2 {
+        font-size: 19px;
+    }
+
+
+
+
+    /* MQS FOOTER */
+
+    #footerdiv {
+        font-size: 10px;
+    }
+
+
+
+
+    /* MQS SIDEBAR - NOT USED WHEN SIDEBAR IS HIDDEN IN MQs ABOVE */
+
+    .sidebar-text {
+        font-size: 13px;
+        line-height: normal;
+    }
+
+    .side-links a {
+        font-size: 13px;
+        line-height: normal;
+    }
+
+    .sidebar-pad {
+        padding: 0px 0px 15px 0px;
+    }
+
+
+
+
+    /* CONTACT PAGE */
+
+    .contactform {
+        margin: 10px 0px 10px 0px;
+    }
+
+    .shadeform,
+    .textarea,
+    .dropdown {
+        font-size: 12px;
+    }
+
+
+
+
+    /* stamps CART PAGE */
+
+    .price span {
+        font-size: 16px;
+    }
+
+    .product-title {
+        font-size: 16px;
+    }
+
+    .product-image-box {
+        float: none;
+        width: auto;
+        padding-right: 0px;
+    }
+
+    .cart-image {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+    }
+
+    input[type=submit].button-order {
+        font-size: 16px;
+        padding: 6px 3px 6px 3px;
+    }
+
+
+
+
+    /* LINKS PAGE */
+
+    .searchform,
+    .searchbutton {
+        font-size: 12px;
+    }
+
+
+
+
+}
+
+/***************
+END Media Queries #4
+***************/

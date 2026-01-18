@@ -1,0 +1,51 @@
+/* Controls */
+.controls {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.controls input,
+.controls select,
+.controls button {
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.pagination button {
+    margin: 2px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background: #222;
+    color: #fff;
+}
+
+/* Hide items not in the current page or search */
+.hidden {
+    display: none !important;
+}
+
+/* Spacing below each stamp */
+.stamp {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.2);
+    padding: 50px 60px 30px 10px;
+    margin-bottom: 35px;
+    background-image: url("../picts/stamp-border.png");
+    background-size: 100% 100%;
+}
+
+.stamp.last-visible {
+    border-bottom: none;
+    padding-bottom: 15;
+    margin-bottom: 30;
+}
