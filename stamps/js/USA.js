@@ -1085,16 +1085,6 @@ const stamps = [{
         paypalId: "N9JKMKNZD4VWN"
     },
     {
-        scott: "713",
-        condition: "Mint",
-        hinged: "Hinged",
-        gum: "Original Gum",
-        grade: "Good/Very Good",
-        price: 0.65,
-        location: "LA01-0034-05-01",
-        paypalId: "WFPKQJLAZQJL4"
-    },
-    {
         scott: "715",
         condition: "Mint",
         hinged: "Hinged",
@@ -2823,6 +2813,76 @@ const stamps = [{
         price: 0.10,
         location: "LA01-0079-03-02",
         paypalId: "4DYW3CUW87CFL"
+    },
+    {
+        scott: "1203",
+        condition: "Used",
+        hinged: "Never Hinged",
+        gum: "Partial Gum",
+        grade: "Very Good",
+        price: 0.08,
+        location: "LA01-0079-03-01",
+        paypalId: "EUAT7MFWGRD7G"
+    },
+    {
+        scott: "1203",
+        condition: "Used",
+        hinged: "Hinged",
+        gum: "No Gum",
+        grade: "Good/Very Good",
+        price: 0.05,
+        location: "NA01-0215-03-01",
+        paypalId: "K4KGZBBNBQ388"
+    },
+    {
+        scott: "1204",
+        condition: "Used",
+        hinged: "Never Hinged",
+        gum: "No Gum",
+        grade: "Good",
+        price: 0.04,
+        location: "LA01-0079-03-03",
+        paypalId: "DDMQV5DCAH96G"
+    },
+    {
+        scott: "1205",
+        condition: "Used",
+        hinged: "Never Hinged",
+        gum: "No Gum",
+        grade: "Very Good/Fine",
+        price: 0.10,
+        location: "LA01-0079-04-02",
+        paypalId: "57L6PJZQJ6QFG"
+    },
+    {
+        scott: "1205",
+        condition: "Used",
+        hinged: "Never Hinged",
+        gum: "No Gum",
+        grade: "Fine",
+        price: 0.11,
+        location: "NA01-0215-04-02",
+        paypalId: "BX86ZV3E3Z744"
+    },
+    {
+        scott: "1206",
+        condition: "Used",
+        hinged: "Hinged",
+        gum: "Partial Gum",
+        grade: "Fair",
+        price: 0.02,
+        location: "LA01-0079-04-01",
+        paypalId: "CZHAYZ98SDNVU"
+    },
+    {
+        scott: "1208",
+        condition: "Used",
+        hinged: "Never Hinged",
+        gum: "No Gum",
+        grade: "Very Good",
+        price: 0.08,
+        location: "LA01-0080-01-03",
+        paypalId: "DNLMU9S3YUU7C"
     },
     {
         scott: "C7",
