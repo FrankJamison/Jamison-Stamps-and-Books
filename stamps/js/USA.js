@@ -3115,6 +3115,16 @@ const stamps = [{
         paypalId: "5FLFYYE2FH9TQ"
     },
     {
+        scott: "1249",
+        condition: "Used",
+        hinged: "Never Hinged",
+        gum: "No Gum",
+        grade: "Very Good/Fine",
+        price: 0.10,
+        location: "NA01-0223-03-02",
+        paypalId: "PR29GXTFWBZ4A"
+    },
+    {
         scott: "1250",
         condition: "Used",
         hinged: "Never Hinged",
