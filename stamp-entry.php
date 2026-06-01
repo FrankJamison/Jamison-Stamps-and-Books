@@ -63,6 +63,10 @@ $error = '';
 $mode = 'create';
 $loaded = false;
 
+$flashSavedId = isset($_GET['saved']) ? (int)$_GET['saved'] : null;
+$flashUpdated = isset($_GET['updated']) ? (int)$_GET['updated'] : null;
+$flashDeleted = isset($_GET['deleted']) ? (int)$_GET['deleted'] : null;
+
 $lookup = [
     'country' => isset($_GET['country']) ? trim((string)$_GET['country']) : 'United States',
     'scott' => isset($_GET['scott']) ? trim((string)$_GET['scott']) : '',
@@ -71,7 +75,8 @@ $lookup = [
 
 try {
     $pdo = api_pdo();
-    $tableName = api_db_table();
+    $tableInfo = api_db_table_resolved($pdo);
+    $tableName = $tableInfo['used'];
 
     $hasPaypalId = api_db_has_column($pdo, $tableName, 'paypal_id');
     $hasPrice = api_db_has_column($pdo, $tableName, 'price');
@@ -158,21 +163,9 @@ try {
             ]);
             $deletedCount = $stmt->rowCount();
 
-            $values = [
-                'country' => 'United States',
-                'scott' => '',
-                'count' => '001',
-                'condition' => '',
-                'hinged' => '',
-                'gum' => '',
-                'grade' => '',
-                'description' => '',
-                'price' => '',
-                'location' => '',
-                'paypal_id' => '',
-            ];
-            $mode = 'create';
-            $loaded = false;
+            // Reset after submission (PRG pattern).
+            header('Location: stamp-entry.php?deleted=' . (int)$deletedCount);
+            exit;
         } else {
             $country = $values['country'];
             $scott = $values['scott'];
@@ -248,7 +241,10 @@ try {
                 $stmt->execute();
 
                 $updatedCount = $stmt->rowCount();
-                $loaded = true;
+
+                // Reset after submission (PRG pattern).
+                header('Location: stamp-entry.php?updated=' . (int)$updatedCount);
+                exit;
             } else {
                 $colNames = array_keys($cols);
                 $sqlCols = implode(', ', array_map(fn($c) => '`' . $c . '`', $colNames));
@@ -263,13 +259,9 @@ try {
 
                 $insertedId = (int)$pdo->lastInsertId();
 
-                // Reset form defaults for next entry.
-                $values['scott'] = '';
-                $values['count'] = '001';
-                $values['description'] = '';
-                $values['price'] = '';
-                $values['location'] = '';
-                if ($hasPaypalId) $values['paypal_id'] = '';
+                // Reset after submission (PRG pattern).
+                header('Location: stamp-entry.php?saved=' . (int)$insertedId);
+                exit;
             }
         }
     }
@@ -306,16 +298,16 @@ try {
                         <div class="content-pad just">
                             <h1 id="page-title" class="title">Stamp Entry</h1>
 
-                            <?php if ($insertedId !== null): ?>
-                                <p><strong>Saved.</strong> New stamp id: <?php echo h((string)$insertedId); ?></p>
+                            <?php if ($flashSavedId !== null && $flashSavedId > 0): ?>
+                                <p><strong>Saved.</strong> New stamp id: <?php echo h((string)$flashSavedId); ?></p>
                             <?php endif; ?>
 
-                            <?php if ($updatedCount !== null): ?>
-                                <p><strong>Updated.</strong> Rows changed: <?php echo h((string)$updatedCount); ?></p>
+                            <?php if ($flashUpdated !== null): ?>
+                                <p><strong>Updated.</strong> Rows changed: <?php echo h((string)$flashUpdated); ?></p>
                             <?php endif; ?>
 
-                            <?php if ($deletedCount !== null): ?>
-                                <p><strong>Deleted.</strong> Rows removed: <?php echo h((string)$deletedCount); ?></p>
+                            <?php if ($flashDeleted !== null): ?>
+                                <p><strong>Deleted.</strong> Rows removed: <?php echo h((string)$flashDeleted); ?></p>
                             <?php endif; ?>
 
                             <?php if ($error !== ''): ?>
