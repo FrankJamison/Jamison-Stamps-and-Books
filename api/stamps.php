@@ -126,6 +126,10 @@ try {
     // Safe ORDER BY mapping
     $orderSql = 'ORDER BY id ASC';
     switch ($sort) {
+        case 'newest':
+            // "Newly Listed" is best-effort: newest rows first.
+            $orderSql = 'ORDER BY id DESC';
+            break;
         case 'scott-asc':
             // Sort in PHP for maximum MariaDB compatibility.
             break;
