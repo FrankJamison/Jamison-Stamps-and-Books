@@ -1,9 +1,8 @@
 User-agent: *
-Disallow: /missing.html
 Disallow: /thanks.htm
-Disallow: /thanks.html
+Disallow: /thanks.php
 Disallow: /thanks-payment.htm
-Disallow: /thanks-payment.html
+Disallow: /thanks-payment.php
 Disallow: /testimonials.htm
 
 Sitemap: https://jamisonstamps.com/sitemap.xml

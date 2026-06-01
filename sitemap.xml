@@ -7,31 +7,31 @@
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://jamisonstamps.com/about.html</loc>
+        <loc>https://jamisonstamps.com/about.php</loc>
         <lastmod>2026-01-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     <url>
-        <loc>https://jamisonstamps.com/stamps/USA.html</loc>
+        <loc>https://jamisonstamps.com/stamps.php</loc>
         <lastmod>2026-01-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     <url>
-        <loc>https://jamisonstamps.com/resources.html</loc>
+        <loc>https://jamisonstamps.com/resources.php</loc>
         <lastmod>2026-01-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://jamisonstamps.com/contact.html</loc>
+        <loc>https://jamisonstamps.com/contact.php</loc>
         <lastmod>2026-01-18</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.6</priority>
     </url>
     <url>
-        <loc>https://jamisonstamps.com/site_map.html</loc>
+        <loc>https://jamisonstamps.com/site_map.php</loc>
         <lastmod>2026-01-18</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>

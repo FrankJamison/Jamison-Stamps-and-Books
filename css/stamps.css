@@ -1,0 +1,304 @@
+/* Controls */
+.content-pad.just {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+}
+
+/* Local cart + add-to-cart */
+.add-to-cart {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 10px 12px;
+    line-height: 1.2;
+    font: inherit;
+    color: inherit;
+    background-color: var(--paper-2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.add-to-cart:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.local-cart {
+    max-width: 100%;
+}
+
+.local-cart-summary {
+    margin: 6px 0 10px 0;
+}
+
+.local-cart-items {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 10px 0;
+}
+
+.local-cart-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 8px;
+}
+
+.local-cart-item-price {
+    grid-column: 1;
+    opacity: 0.9;
+}
+
+.local-cart-item-remove {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding: 6px 8px;
+    font: inherit;
+    color: inherit;
+    background-color: var(--paper-2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.local-cart-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.local-cart-actions {
+    display: grid;
+    gap: 8px;
+}
+
+.local-cart-checkout,
+.local-cart-clear {
+    width: 100%;
+    padding: 10px 12px;
+    font: inherit;
+    color: inherit;
+    background-color: var(--paper-2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.local-cart-checkout:disabled,
+.local-cart-clear:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+@supports not (overflow: clip) {
+    .content-pad.just {
+        overflow-x: hidden;
+    }
+}
+
+.content-pad.just>* {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.content-pad.just img,
+.content-pad.just svg,
+.content-pad.just video,
+.content-pad.just canvas,
+.content-pad.just iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+.content-pad.just #pagerTop,
+.content-pad.just #pagerBottom {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.content-pad.just #pagerTop>*,
+.content-pad.just #pagerBottom>* {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.content-pad.just .pager-jump {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.content-pad.just .pager-jump input {
+    max-width: 100%;
+}
+
+/* Controls form (filters/sort) */
+.controls {
+    max-width: 100%;
+    margin: 0 0 14px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px 20px;
+}
+
+.controls>div {
+    display: block;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-size: 17px;
+}
+
+.controls input,
+.controls select,
+.controls button:not(.sr-only) {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 8px 10px;
+    line-height: 1.2;
+    height: 40px;
+    font: inherit;
+    color: inherit;
+    background-color: var(--paper-2);
+    border: 1px solid var(--border);
+    box-sizing: border-box;
+}
+
+.controls input[type="search"] {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.pagination button {
+    margin: 2px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.pagination button.active {
+    background: #222;
+    color: #fff;
+}
+
+/* Hide items not in the current page or search */
+.hidden {
+    display: none !important;
+}
+
+/* Spacing below each stamp */
+.stamp {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.2);
+    padding: clamp(18px, 4vw, 44px);
+    margin-bottom: 35px;
+    background-image: url("../picts/stamp-border.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+}
+
+.stamp.last-visible {
+    border-bottom: none;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+/* Stamp item card (gallery + details) */
+.stamp-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    align-items: start;
+}
+
+.stamp-gallery {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.stamp-main {
+    border: 1px solid var(--border);
+    background-color: var(--paper-2);
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.stamp-main-img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.stamp-thumbs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 0 0 0;
+}
+
+.stamp-thumb-btn {
+    flex: 0 0 auto;
+    width: 72px;
+    padding: 0;
+    border: none;
+    background-color: var(--paper-2);
+    cursor: pointer;
+}
+
+.stamp-thumb-btn[aria-current="true"] {
+    outline: none;
+    outline-offset: 0;
+}
+
+.stamp-thumb-btn:focus-visible {
+    outline: 3px solid var(--postal-blue);
+    outline-offset: 2px;
+}
+
+.stamp-thumb-img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.stamp-details {
+    min-width: 0;
+}
+
+.stamp-title {
+    margin: 0 0 8px 0;
+    color: var(--link-hover);
+}
+
+.stamp-title-line {
+    display: block;
+}
+
+.stamp-title-line2 {
+    font-size: 0.8em;
+}
+
+.stamp-price {
+    margin: 0 0 10px 0;
+    font-weight: bold;
+    color: var(--collector-green);
+}
+
+.stamp-description p {
+    margin: 0 0 10px 0;
+}
+
+.stamp-buy {
+    margin-top: 12px;
+}

@@ -10,3 +10,8 @@ Thumbs.db
 
 # Optional build artifacts
 *.map
+
+# Local secrets (do not commit)
+api/db.local.php
+api/db.config.php
+.env.local

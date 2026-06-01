@@ -22,6 +22,15 @@ function closestPolyfill(el, selector) {
 function setExpanded(triggerEl, expanded) {
     if (triggerEl && triggerEl.setAttribute) {
         triggerEl.setAttribute("aria-expanded", expanded ? "true" : "false");
+
+        // Keep the button's accessible name in sync with state.
+        // Defaults match the markup used across the site.
+        var openLabel = triggerEl.getAttribute("data-label-open") || "Open menu";
+        var closeLabel = triggerEl.getAttribute("data-label-close") || "Close menu";
+        var currentLabel = triggerEl.getAttribute("aria-label") || "";
+        if (currentLabel === openLabel || currentLabel === closeLabel) {
+            triggerEl.setAttribute("aria-label", expanded ? closeLabel : openLabel);
+        }
     }
 }
 

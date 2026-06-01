@@ -1,0 +1,14 @@
+# Jamison Stamps & Books — URL cutover
+# Redirect legacy .html/.htm brochure URLs to their .php equivalents.
+
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Top-level pages
+  RewriteRule ^(index|about|contact|resources|site_map|thanks|thanks-payment)\.html?$ $1.php [R=301,L]
+
+  # Renamed product page
+  RewriteRule ^inventory\.php$ stamps.php [R=301,L]
+</IfModule>

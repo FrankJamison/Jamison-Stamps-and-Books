@@ -1,0 +1,22 @@
+<?php
+/**
+ * Local (non-committed) database configuration for the stamps API.
+ *
+ * Copy to `api/db.local.php` and fill in values.
+ * This file is ignored by git via .gitignore.
+ */
+
+return [
+    // Option A (recommended): host/port/name
+    'host' => 'localhost',
+    'port' => '3306',
+    'name' => 'your_database_name',
+    'user' => 'your_database_user',
+    'pass' => 'your_database_password',
+
+    // Optional: table name (default: stamps)
+    'table' => 'stamps',
+
+    // Option B: full DSN (overrides host/port/name)
+    // 'dsn' => 'mysql:host=localhost;port=3306;dbname=your_database_name;charset=utf8mb4',
+];

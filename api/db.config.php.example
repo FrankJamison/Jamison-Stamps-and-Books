@@ -1,0 +1,21 @@
+<?php
+/**
+ * Production database configuration for the stamps API.
+ *
+ * Copy to `api/db.config.php` on your server (do NOT commit).
+ * If present, it is preferred over `api/db.local.php`.
+ */
+
+return [
+    'host' => 'localhost',
+    'port' => '3306',
+    'name' => 'YOUR_DB_NAME',
+    'user' => 'YOUR_DB_USER',
+    'pass' => 'YOUR_DB_PASSWORD',
+
+    // Optional: table name (default: stamps)
+    'table' => 'stamps',
+
+    // Optional: full DSN (overrides host/port/name)
+    // 'dsn' => 'mysql:host=localhost;port=3306;dbname=YOUR_DB_NAME;charset=utf8mb4',
+];

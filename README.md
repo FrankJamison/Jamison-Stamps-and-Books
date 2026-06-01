@@ -1,6 +1,6 @@
 # Jamison Stamps & Books
 
-Production static site + a small, data-driven stamps catalog (vanilla JS). This repo is intentionally **zero-build**: no bundler, no framework, and no compile step—just HTML/CSS/JS that’s easy to host and easy to update.
+Production site + a small, data-driven stamps catalog (vanilla JS). This repo is intentionally **zero-build**: no bundler, no framework, and no compile step—just PHP/HTML/CSS/JS that’s easy to host and easy to update.
 
 ## Quick start (Windows + VS Code)
 
@@ -8,28 +8,32 @@ Production static site + a small, data-driven stamps catalog (vanilla JS). This 
 
 2. Open it in a browser:
 
-- VS Code task: **Open in Browser** (opens `http://jamisonstampsandbooks.localhost/`)
-- Or any local server: `http://localhost:8080/` (see “Running locally”)
+- VS Code task: **Open in Browser** (prints `http://127.0.0.1:8080/` and attempts to open it)
+- Or any local server: `http://127.0.0.1:8080/` (see “Running locally”)
 
 ## URLs
 
 - Production: https://jamisonstamps.com/
-- Local (this workspace task): `http://jamisonstampsandbooks.localhost/`
+- Local: `http://127.0.0.1:8080/`
 
-Note: the provided VS Code task opens a host on port 80. If you don’t have a local web server listening there, use the “any static server” option and open the `localhost:PORT` URL instead.
+Legacy URLs:
+
+- The old top-level `.html` / `.htm` URLs are intended to permanently redirect to their `.php` equivalents (see `.htaccess`).
+
+Note: in some remote/headless Linux environments the task may not be able to launch a GUI browser; it will still print the URL.
 
 ## Tech stack
 
-- HTML: hand-authored pages, semantic landmarks
+- PHP: simple `.php` pages (mostly static HTML), semantic landmarks
 - CSS: global theme + responsive breakpoints
 - JavaScript:
   - Site-wide behaviors (mobile menu + scroll-to-top): `js/javascripts.js`
-  - Stamps catalog “mini-app” (render/filter/sort/paging + PayPal add-to-cart): `stamps/js/USA.js`
+  - Stamps catalog “mini-app” (render/filter/sort/paging + PayPal add-to-cart): `js/stamps.js`
 
 ### External services
 
 - PayPal Cart (NCP): `https://www.paypalobjects.com/ncp/cart/cart.js` (used only on the stamps catalog)
-- Formspree: contact form submissions (`contact.html`)
+- Formspree: contact form submissions (`contact.php`)
 
 ## Repository layout
 
@@ -37,13 +41,13 @@ Top-level pages:
 
 ```
 /
-	index.html
-	about.html
-	contact.html
-	resources.html
-	site_map.html
-	thanks.html
-	thanks-payment.html
+	index.php
+	about.php
+	contact.php
+	resources.php
+	site_map.php
+	thanks.php
+	thanks-payment.php
 	robots.txt
 	sitemap.xml
 ```
@@ -60,6 +64,8 @@ js/
 
 picts/
 	(site images)
+	stamps/
+		(stamp photos)
 
 tools/
 	optimize-images.cmd
@@ -68,13 +74,16 @@ tools/
 Stamps catalog (separate “mini-app” area):
 
 ```
-stamps/
-	USA.html
+	stamps.php
 	css/stamps.css
-	js/USA.js
+	js/stamps.js
+
+api/
+	stamps.php
+	filters.php
 ```
 
-Why `stamps/` is separate: the stamps page renders a large inventory list from a JS dataset, supports filter/sort/paging, and integrates commerce widgets. Keeping it isolated avoids complicating the brochure-style pages.
+Why the stamps page is separate: it renders a large inventory list from a JS dataset, supports filter/sort/paging, and integrates commerce widgets. Keeping it isolated avoids complicating the brochure-style pages.
 
 ## Running locally
 
@@ -82,19 +91,19 @@ Because the site uses external scripts (PayPal) and browsers restrict some behav
 
 ### Option A — VS Code task
 
-Run the **Open in Browser** task (it opens `http://jamisonstampsandbooks.localhost/`).
+Run the **Open in Browser** task (prints `http://127.0.0.1:8080/`).
 
-### Option B — any static server
+### Option B — PHP built-in server
 
 From repo root:
 
 ```bash
-python -m http.server 8080
+php -S 127.0.0.1:8080 -t .
 ```
 
-Then open `http://localhost:8080/`.
+Then open `http://127.0.0.1:8080/`.
 
-If you don’t have Python, any static server works (IIS, Apache, Nginx, etc.).
+Any server that can run PHP works (IIS, Apache, Nginx, etc.).
 
 ## How the site works
 
@@ -123,9 +132,87 @@ Progressive enhancements kept intentionally small:
 
 ## Stamps catalog (data-driven page)
 
-- Page: `stamps/USA.html`
-- Styles: `stamps/css/stamps.css`
-- Data + logic: `stamps/js/USA.js`
+- Page: `stamps.php`
+- Styles: `css/stamps.css`
+- Frontend logic: `js/stamps.js`
+
+### Live database endpoint (dynamic; no runtime JSON)
+
+The stamps page fetches inventory data from same-origin endpoints:
+
+- `/api/stamps.php` (paged results; 25 items per page)
+- `/api/filters.php` (distinct values for dropdowns)
+
+These endpoints query MariaDB/MySQL (table name is configurable via `STAMPS_DB_TABLE`) and return JSON to the browser.
+
+Configure connection via environment variables:
+
+- `STAMPS_DB_HOST` (e.g. `localhost`)
+- `STAMPS_DB_PORT` (optional; default `3306`)
+- `STAMPS_DB_NAME`
+- `STAMPS_DB_USER`
+- `STAMPS_DB_PASS`
+
+Or provide a full DSN:
+
+- `STAMPS_DB_DSN` (e.g. `mysql:host=HOST;port=3306;dbname=DBNAME;charset=utf8mb4`)
+
+Alternatively (common on shared hosting), use a server-side config file:
+
+- Production server: copy [api/db.config.php.example](api/db.config.php.example) to `api/db.config.php`
+- Local dev with `php -S`: copy [api/db.local.php.example](api/db.local.php.example) to `api/db.local.php`
+
+Both files are ignored by git.
+
+### Offline editing workflow (SQLite)
+
+SQLite can be used as an editing/source-of-truth format for bulk updates and exports.
+
+- Import JS dataset → SQLite:
+  - [tools/import_usa_js_to_sqlite.py](tools/import_usa_js_to_sqlite.py)
+- Export SQLite → JSON for the browser:
+  - [tools/export_stamps_json.py](tools/export_stamps_json.py)
+
+Example (from repo root):
+
+```bash
+python3 tools/import_usa_js_to_sqlite.py --input /path/to/USA.js --db data/stamps.sqlite3 --table stamps --country "United States" --replace
+python3 tools/export_stamps_json.py --db data/stamps.sqlite3 --table stamps --out stamps/data/stamps.json
+```
+
+Note: `stamps/data/stamps.json` is an optional export artifact and is not required for the live site. The live site uses the `/api/*.php` endpoints at runtime.
+
+### MariaDB / MySQL (phpMyAdmin)
+
+This repo’s live `/api/*.php` endpoints are designed to run on the same server as the website and query a MariaDB/MySQL table (default: `stamps_mariadb`, configurable via `STAMPS_DB_TABLE`).
+
+Important: the browser cannot connect directly to MariaDB. The browser only calls the `/api/*.php` endpoints.
+
+#### Create the table
+
+Run this SQL in phpMyAdmin (or any MySQL client):
+
+- [tools/mariadb/create_stamps_table.sql](tools/mariadb/create_stamps_table.sql)
+
+Note: the MariaDB `price` column is stored as a dollar amount (e.g. `0.47`).
+
+#### Export a CSV for MariaDB
+
+From repo root:
+
+```bash
+python3 tools/export_stamps_mariadb_csv.py --db data/stamps.sqlite3 --table stamps --out data/stamps_mariadb.csv
+```
+
+#### Import into MariaDB with phpMyAdmin
+
+1. phpMyAdmin → select your database
+2. Run the “Create the table” SQL above
+3. Click the `stamps` table → Import tab
+4. Choose `data/stamps_mariadb.csv`
+5. Format: CSV
+6. Enable “The first line of the file contains the table column names”
+7. Run the import
 
 ### Data model
 
@@ -133,6 +220,7 @@ Each stamp inventory row is an object like:
 
 ```js
 {
+	country: "United States",
 	scott: "147",
 	condition: "Used",
 	hinged: "Never Hinged",
@@ -162,7 +250,7 @@ The page loads PayPal’s cart script and renders `<paypal-add-to-cart-button>` 
 
 ## Contact form
 
-`contact.html` posts to Formspree and redirects to `thanks.html`.
+`contact.php` posts to Formspree and redirects to `thanks.php`.
 
 Implementation notes:
 
@@ -184,9 +272,9 @@ Core pages include:
 
 - `robots.txt` blocks non-content utility pages (thank-you pages, etc.)
 - `sitemap.xml` is the machine-readable sitemap
-- `site_map.html` is the human-readable site map
+- `site_map.php` is the human-readable site map
 
-When you add/remove a public page, update both `site_map.html` and `sitemap.xml` (and consider updating `robots.txt` if it’s a utility/thank-you page).
+When you add/remove a public page, update both `site_map.php` and `sitemap.xml` (and consider updating `robots.txt` if it’s a utility/thank-you page).
 
 ## Accessibility
 
@@ -214,13 +302,12 @@ Implemented directly in HTML/CSS:
 2. Include `css/style.css`, `css/media-queries.css`, and `js/javascripts.js`
 3. Ensure the skip link targets `<main id="maincontent">`
 4. Update navigation across pages (this repo uses copied markup, not templating)
-5. Add to `site_map.html` and `sitemap.xml` if it’s public
+5. Add to `site_map.php` and `sitemap.xml` if it’s public
 
 ### Updating the stamp inventory
 
-- Edit the `stamps` array in `stamps/js/USA.js`
-- Keep the object shape consistent (missing keys can break filters/sorting)
-- Ensure `paypalId` is valid and unique per row
+- Use the admin entry page to add/update/delete stamps, or edit the backing database table directly.
+- The stamps UI loads inventory via the `/api/*.php` endpoints at runtime.
 
 ## Image optimization (optional)
 
