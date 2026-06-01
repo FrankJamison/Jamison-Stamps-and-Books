@@ -31,8 +31,7 @@
                     <img src="picts/sidebar-2.jpg" width="50" height="60" class="side-borders" alt="">
                 </div>
                 <div class="sidebarR td-left td-top">
-                    <p class="smalltitle">United States Collection</p>
-                    <p>1870 - 2001<br><a href="stamps.php">View Stamps</a></p>
+                    <p class="smalltitle"><a href="stamps.php">Stamp<br>Inventory</a></p>   
                 </div>
             </div>
         </div>

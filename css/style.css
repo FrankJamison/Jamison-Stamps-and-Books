@@ -594,6 +594,9 @@ h4 {
     max-width: 360px;
     min-width: 0;
     width: min(360px, 100%);
+    position: sticky;
+    top: 12px;
+    align-self: flex-start;
     padding: 10px 20px 10px 20px;
     background-color: var(--card);
     border-left: 1px solid var(--border);
