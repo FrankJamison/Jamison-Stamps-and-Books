@@ -5,7 +5,8 @@ require_once __DIR__ . '/db.php';
 
 try {
     $pdo = api_pdo();
-    $tableName = api_db_table();
+    $tableInfo = api_db_table_resolved($pdo);
+    $tableName = $tableInfo['used'];
     $table = '`' . $tableName . '`';
 
     $hasCountry = api_db_has_column($pdo, $tableName, 'country');
@@ -52,7 +53,7 @@ try {
     ];
 
     if (api_debug_enabled()) {
-        $payload['debug'] = api_db_debug_info($pdo, $tableName);
+        $payload['debug'] = array_merge($tableInfo, api_db_debug_info($pdo, $tableName));
         try {
             $payload['debug']['database'] = $pdo->query('SELECT DATABASE()')->fetchColumn();
             $payload['debug']['rowCount'] = (int)($pdo->query('SELECT COUNT(*) FROM ' . $table)->fetchColumn() ?: 0);
@@ -71,8 +72,9 @@ try {
     if (api_debug_enabled()) {
         try {
             $pdo = isset($pdo) && $pdo instanceof PDO ? $pdo : api_pdo();
-            $tableName = isset($tableName) && is_string($tableName) ? $tableName : api_db_table();
-            $payload['debug'] = api_db_debug_info($pdo, $tableName);
+            $tableInfo = isset($tableInfo) && is_array($tableInfo) ? $tableInfo : api_db_table_resolved($pdo);
+            $tableName = isset($tableName) && is_string($tableName) ? $tableName : (string)($tableInfo['used'] ?? api_db_table());
+            $payload['debug'] = array_merge($tableInfo, api_db_debug_info($pdo, $tableName));
         } catch (Throwable $ignored) {
         }
     }

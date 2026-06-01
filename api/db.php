@@ -16,10 +16,21 @@ function api_debug_enabled(): bool {
 }
 
 function api_env(string $key, ?string $default = null): ?string {
-    $val = getenv($key);
-    if ($val === false) return $default;
-    $val = trim((string)$val);
-    return $val === '' ? $default : $val;
+    // In some Apache/PHP-FPM setups, variables configured via `SetEnv` or
+    // `fastcgi_param` may appear in $_SERVER/$_ENV but not in getenv().
+    $candidates = [
+        getenv($key),
+        $_ENV[$key] ?? null,
+        $_SERVER[$key] ?? null,
+    ];
+
+    foreach ($candidates as $val) {
+        if ($val === false || $val === null) continue;
+        $s = trim((string)$val);
+        if ($s !== '') return $s;
+    }
+
+    return $default;
 }
 
 function api_local_db_config(): array {
@@ -70,6 +81,33 @@ function api_db_table(): string {
     }
 
     return $table;
+}
+
+function api_db_table_exists(PDO $pdo, string $tableName): bool {
+    // $tableName is validated by api_db_table() to [A-Za-z0-9_]+.
+    $stmt = $pdo->prepare('SHOW TABLES LIKE :t');
+    $stmt->execute([':t' => $tableName]);
+    return (bool)$stmt->fetchColumn();
+}
+
+function api_db_table_resolved(PDO $pdo): array {
+    // Returns ['configured' => string, 'used' => string, 'configuredExists' => bool, 'usedExists' => bool]
+    $configured = api_db_table();
+    $configuredExists = api_db_table_exists($pdo, $configured);
+    $used = $configured;
+
+    // Common production footgun: config points at the CSV filename/table alias
+    // (e.g. stamps_mariadb) but the actual table is named `stamps`.
+    if (!$configuredExists && $configured !== 'stamps' && api_db_table_exists($pdo, 'stamps')) {
+        $used = 'stamps';
+    }
+
+    return [
+        'configured' => $configured,
+        'used' => $used,
+        'configuredExists' => $configuredExists,
+        'usedExists' => api_db_table_exists($pdo, $used),
+    ];
 }
 
 function api_pdo(): PDO {

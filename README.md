@@ -184,7 +184,7 @@ Note: `stamps/data/stamps.json` is an optional export artifact and is not requir
 
 ### MariaDB / MySQL (phpMyAdmin)
 
-This repo’s live `/api/*.php` endpoints are designed to run on the same server as the website and query a MariaDB/MySQL table (default: `stamps_mariadb`, configurable via `STAMPS_DB_TABLE`).
+This repo’s live `/api/*.php` endpoints are designed to run on the same server as the website and query a MariaDB/MySQL table (default: `stamps`, configurable via `STAMPS_DB_TABLE`).
 
 Important: the browser cannot connect directly to MariaDB. The browser only calls the `/api/*.php` endpoints.
 

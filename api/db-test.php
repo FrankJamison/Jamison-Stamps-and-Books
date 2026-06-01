@@ -11,13 +11,10 @@ try {
 
     $dbName = $pdo->query('SELECT DATABASE()')->fetchColumn();
 
-    $tableName = api_db_table();
+    $tableInfo = api_db_table_resolved($pdo);
+    $tableName = $tableInfo['used'];
     $quotedTable = '`' . $tableName . '`';
-
-    // Does the table exist in the selected database?
-    $stmt = $pdo->prepare('SHOW TABLES LIKE :t');
-    $stmt->execute([':t' => $tableName]);
-    $tableExists = (bool)$stmt->fetchColumn();
+    $tableExists = (bool)$tableInfo['usedExists'];
 
     $columns = [];
     $rowCount = null;
@@ -29,6 +26,8 @@ try {
     echo json_encode([
         'ok' => true,
         'database' => $dbName,
+        'tableConfigured' => $tableInfo['configured'],
+        'tableConfiguredExists' => (bool)$tableInfo['configuredExists'],
         'table' => $tableName,
         'tableExists' => $tableExists,
         'columns' => $columns,
