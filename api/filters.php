@@ -16,7 +16,12 @@ try {
     // Countries (always global) — only if the schema supports it.
     $countries = [];
     if ($hasCountry) {
-        $countries = $pdo->query('SELECT DISTINCT country FROM ' . $table . ' ORDER BY country')->fetchAll(PDO::FETCH_COLUMN);
+        $rows = $pdo->query('SELECT country AS v, COUNT(*) AS cnt FROM ' . $table . ' GROUP BY country ORDER BY country')->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $r) {
+            $v = isset($r['v']) ? trim((string)$r['v']) : '';
+            if ($v === '') continue;
+            $countries[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
+        }
     }
 
     // Other filters (optionally scoped by country)
@@ -27,29 +32,50 @@ try {
         $params[':country'] = $country;
     }
 
-    $stmt = $pdo->prepare('SELECT DISTINCT `condition` FROM ' . $table . $where . ' ORDER BY `condition`');
+    $stmt = $pdo->prepare('SELECT `condition` AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY `condition` ORDER BY `condition`');
     $stmt->execute($params);
-    $conditions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $conditions = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $v = isset($r['v']) ? trim((string)$r['v']) : '';
+        if ($v === '') continue;
+        $conditions[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
+    }
 
-    $stmt = $pdo->prepare('SELECT DISTINCT hinged FROM ' . $table . $where . ' ORDER BY hinged');
+    $stmt = $pdo->prepare('SELECT hinged AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY hinged ORDER BY hinged');
     $stmt->execute($params);
-    $hinged = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $hinged = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $v = isset($r['v']) ? trim((string)$r['v']) : '';
+        if ($v === '') continue;
+        $hinged[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
+    }
 
-    $stmt = $pdo->prepare('SELECT DISTINCT gum FROM ' . $table . $where . ' ORDER BY gum');
+    $stmt = $pdo->prepare('SELECT gum AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY gum ORDER BY gum');
     $stmt->execute($params);
-    $gums = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $gums = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $v = isset($r['v']) ? trim((string)$r['v']) : '';
+        if ($v === '') continue;
+        $gums[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
+    }
 
-    $stmt = $pdo->prepare('SELECT DISTINCT grade FROM ' . $table . $where . ' ORDER BY grade');
+    $stmt = $pdo->prepare('SELECT grade AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY grade ORDER BY grade');
     $stmt->execute($params);
-    $grades = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    $grades = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $v = isset($r['v']) ? trim((string)$r['v']) : '';
+        if ($v === '') continue;
+        $grades[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
+    }
 
 
     $payload = [
-        'countries' => array_values(array_filter($countries, fn($v) => $v !== null && $v !== '')),
-        'conditions' => array_values(array_filter($conditions, fn($v) => $v !== null && $v !== '')),
-        'hinged' => array_values(array_filter($hinged, fn($v) => $v !== null && $v !== '')),
-        'gums' => array_values(array_filter($gums, fn($v) => $v !== null && $v !== '')),
-        'grades' => array_values(array_filter($grades, fn($v) => $v !== null && $v !== '')),
+        // Arrays of { value, count }
+        'countries' => $countries,
+        'conditions' => $conditions,
+        'hinged' => $hinged,
+        'gums' => $gums,
+        'grades' => $grades,
     ];
 
     if (api_debug_enabled()) {

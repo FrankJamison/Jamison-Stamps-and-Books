@@ -771,10 +771,36 @@ function setSelectOptions(selectId, values) {
     if (!el) return;
     const first = el.firstElementChild?.outerHTML || '<option value=""></option>';
     el.innerHTML = first;
-    uniqueSorted(values || []).forEach(v => {
+
+    const list = Array.isArray(values) ? values : [];
+    const isObjList = list.some(v => v && typeof v === "object");
+
+    if (isObjList) {
+        list.forEach(item => {
+            const v = (item && typeof item === "object")
+                ? (item.value ?? item.v ?? "")
+                : item;
+            const val = (v ?? "").toString().trim();
+            if (!val) return;
+
+            const cntRaw = (item && typeof item === "object") ? (item.count ?? item.cnt) : undefined;
+            const cntNum = Number(cntRaw);
+            const hasCount = Number.isFinite(cntNum);
+
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = hasCount ? `${val} (${Math.max(0, Math.trunc(cntNum))})` : val;
+            el.appendChild(opt);
+        });
+        return;
+    }
+
+    uniqueSorted(list).forEach(v => {
+        const val = (v ?? "").toString().trim();
+        if (!val) return;
         const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
+        opt.value = val;
+        opt.textContent = val;
         el.appendChild(opt);
     });
 }
