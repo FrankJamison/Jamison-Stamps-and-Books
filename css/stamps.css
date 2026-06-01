@@ -18,6 +18,17 @@
     border: 1px solid var(--border);
     cursor: pointer;
     box-sizing: border-box;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.add-to-cart:not(:disabled):hover {
+    background-color: var(--card-2);
+    border-color: var(--link-hover);
+}
+
+.add-to-cart:focus-visible {
+    outline: 3px solid var(--postal-blue);
+    outline-offset: 2px;
 }
 
 .add-to-cart:disabled {
@@ -84,6 +95,19 @@
     background-color: var(--paper-2);
     border: 1px solid var(--border);
     cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.local-cart-checkout:not(:disabled):hover,
+.local-cart-clear:not(:disabled):hover {
+    background-color: var(--card-2);
+    border-color: var(--link-hover);
+}
+
+.local-cart-checkout:focus-visible,
+.local-cart-clear:focus-visible {
+    outline: 3px solid var(--postal-blue);
+    outline-offset: 2px;
 }
 
 .local-cart-checkout:disabled,
