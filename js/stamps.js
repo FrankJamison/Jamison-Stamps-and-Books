@@ -828,7 +828,7 @@ function getCurrentQueryState() {
         hinged: byId("hingedFilter")?.value || "",
         gum: byId("gumFilter")?.value || "",
         grade: byId("gradeFilter")?.value || "",
-        sort: byId("sortOptions")?.value || "",
+        sort: byId("sortOptions")?.value || "scott-asc",
     };
 }
 

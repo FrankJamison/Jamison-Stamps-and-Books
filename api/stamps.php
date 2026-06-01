@@ -75,6 +75,10 @@ try {
     $gum = isset($_GET['gum']) ? trim((string)$_GET['gum']) : '';
     $grade = isset($_GET['grade']) ? trim((string)$_GET['grade']) : '';
     $sort = isset($_GET['sort']) ? trim((string)$_GET['sort']) : '';
+    if ($sort === '') {
+        // Default site order: Scott number (low -> high).
+        $sort = 'scott-asc';
+    }
 
     $pageSize = api_int_param('pageSize', 25, 1, 100);
     $page = api_int_param('page', 1, 1, 1000000);
