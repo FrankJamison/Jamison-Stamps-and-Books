@@ -157,8 +157,10 @@ try {
     }
 
     $pdo = api_pdo();
-    $tableName = api_db_table();
+    $tableInfo = api_db_table_resolved($pdo);
+    $tableName = $tableInfo['used'];
     $table = '`' . $tableName . '`';
+    $hasLocation = api_db_has_column($pdo, $tableName, 'location');
 
     $txnId = isset($post['txn_id']) ? trim((string)$post['txn_id']) : '';
     $gross = isset($post['mc_gross']) ? trim((string)$post['mc_gross']) : '';
@@ -166,20 +168,31 @@ try {
 
     $pdo->beginTransaction();
     $deleted = 0;
+    $sold = [];
 
-    $select = $pdo->prepare('SELECT `count` FROM ' . $table . ' WHERE id = :id');
+    $select = $hasLocation
+        ? $pdo->prepare('SELECT `location` FROM ' . $table . ' WHERE id = :id')
+        : null;
     $stmt = $pdo->prepare('DELETE FROM ' . $table . ' WHERE id = :id');
     foreach ($ids as $id) {
-        $stampCount = null;
-        $select->execute([':id' => $id]);
-        $row = $select->fetch(PDO::FETCH_ASSOC);
-        if (is_array($row) && array_key_exists('count', $row)) {
-            $stampCount = (string)$row['count'];
+        $stampLocation = null;
+        if ($select) {
+            $select->execute([':id' => $id]);
+            $row = $select->fetch(PDO::FETCH_ASSOC);
+            if (is_array($row) && array_key_exists('location', $row)) {
+                $stampLocation = (string)$row['location'];
+            }
         }
 
         $stmt->execute([':id' => $id]);
         $didDelete = $stmt->rowCount() > 0;
         if ($didDelete) $deleted += 1;
+
+        $sold[] = [
+            'id' => $id,
+            'location' => $stampLocation,
+            'deleted' => $didDelete,
+        ];
 
         ipn_log_sold_item([
             'event' => 'sold',
@@ -187,7 +200,7 @@ try {
             'receiver_id' => $receiverId,
             'txn_id' => $txnId,
             'stamp_id' => $id,
-            'stamp_count' => $stampCount,
+            'stamp_location' => $stampLocation,
             'deleted' => $didDelete,
             'mc_gross' => $gross,
             'mc_currency' => $currency,
@@ -196,7 +209,15 @@ try {
 
     $pdo->commit();
 
-    ipn_log('IPN VERIFIED completed; deleted=' . $deleted . '; ids=' . implode(',', $ids));
+    $soldParts = array_map(function (array $s): string {
+        $id = (int)($s['id'] ?? 0);
+        $loc = isset($s['location']) && $s['location'] !== null ? trim((string)$s['location']) : '';
+        $deleted = !empty($s['deleted']);
+        $suffix = $loc !== '' ? ('@' . $loc) : '';
+        return $id . $suffix . ($deleted ? '' : '(not_deleted)');
+    }, $sold);
+
+    ipn_log('IPN VERIFIED completed; deleted=' . $deleted . '; items=' . implode(',', $soldParts));
 
     http_response_code(200);
     header('Content-Type: text/plain; charset=utf-8');

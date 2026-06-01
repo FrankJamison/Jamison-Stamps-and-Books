@@ -216,15 +216,19 @@
 
 /* Stamp item card (gallery + details) */
 .stamp-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 16px;
-    align-items: start;
+    align-items: flex-start;
+    padding: 12px;
+    box-sizing: border-box;
 }
 
 .stamp-gallery {
     max-width: 100%;
     min-width: 0;
+    flex: 3 1 240px;
+    /* 30% when side-by-side (3/10) */
 }
 
 .stamp-main {
@@ -242,6 +246,8 @@
 
 .stamp-thumbs {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 8px;
     overflow-x: auto;
     padding: 8px 0 0 0;
@@ -274,6 +280,8 @@
 
 .stamp-details {
     min-width: 0;
+    flex: 7 1 240px;
+    /* 70% when side-by-side (7/10) */
 }
 
 .stamp-title {
