@@ -92,7 +92,35 @@ try {
         $gums[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
     }
 
-    $stmt = $pdo->prepare('SELECT grade AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY grade ORDER BY grade');
+    // Force user-friendly grade ordering.
+    // Expected order:
+    // Gem, Superb, Extra Fine/Superb, Extra Fine, Very Fine/Extra Fine, Very Fine,
+    // Fine/Very Fine, Fine, Very Good/Fine, Very Good, Good/Very Good, Good,
+    // Fair/Good, Fair, Poor, Damaged (then anything else alphabetically).
+    // Use a simple normalization (lowercase + remove spaces) to tolerate minor formatting differences.
+    $stmt = $pdo->prepare(
+        'SELECT grade AS v, COUNT(*) AS cnt ' .
+        'FROM ' . $table . $where . ' ' .
+        'GROUP BY grade ' .
+        'ORDER BY (CASE REPLACE(LOWER(grade), " ", "") ' .
+            "WHEN 'gem' THEN 1 " .
+            "WHEN 'superb' THEN 2 " .
+            "WHEN 'extrafine/superb' THEN 3 " .
+            "WHEN 'extrafine' THEN 4 " .
+            "WHEN 'veryfine/extrafine' THEN 5 " .
+            "WHEN 'veryfine' THEN 6 " .
+            "WHEN 'fine/veryfine' THEN 7 " .
+            "WHEN 'fine' THEN 8 " .
+            "WHEN 'verygood/fine' THEN 9 " .
+            "WHEN 'verygood' THEN 10 " .
+            "WHEN 'good/verygood' THEN 11 " .
+            "WHEN 'good' THEN 12 " .
+            "WHEN 'fair/good' THEN 13 " .
+            "WHEN 'fair' THEN 14 " .
+            "WHEN 'poor' THEN 15 " .
+            "WHEN 'damaged' THEN 16 " .
+            'ELSE 99 END), grade'
+    );
     $stmt->execute($params);
     $grades = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
