@@ -32,7 +32,18 @@ try {
         $params[':country'] = $country;
     }
 
-    $stmt = $pdo->prepare('SELECT `condition` AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY `condition` ORDER BY `condition`');
+    // Force user-friendly condition ordering.
+    // Expected order: Mint, Unused, Used (then anything else alphabetically).
+    $stmt = $pdo->prepare(
+        'SELECT `condition` AS v, COUNT(*) AS cnt ' .
+        'FROM ' . $table . $where . ' ' .
+        'GROUP BY `condition` ' .
+        'ORDER BY (CASE LOWER(`condition`) ' .
+            "WHEN 'mint' THEN 1 " .
+            "WHEN 'unused' THEN 2 " .
+            "WHEN 'used' THEN 3 " .
+            'ELSE 99 END), `condition`'
+    );
     $stmt->execute($params);
     $conditions = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
@@ -41,7 +52,17 @@ try {
         $conditions[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
     }
 
-    $stmt = $pdo->prepare('SELECT hinged AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY hinged ORDER BY hinged');
+    // Force user-friendly hinging ordering.
+    // Expected order: Never Hinged, Hinged (then anything else alphabetically).
+    $stmt = $pdo->prepare(
+        'SELECT hinged AS v, COUNT(*) AS cnt ' .
+        'FROM ' . $table . $where . ' ' .
+        'GROUP BY hinged ' .
+        'ORDER BY (CASE LOWER(hinged) ' .
+            "WHEN 'never hinged' THEN 1 " .
+            "WHEN 'hinged' THEN 2 " .
+            'ELSE 99 END), hinged'
+    );
     $stmt->execute($params);
     $hinged = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
@@ -50,7 +71,19 @@ try {
         $hinged[] = ['value' => $v, 'count' => (int)($r['cnt'] ?? 0)];
     }
 
-    $stmt = $pdo->prepare('SELECT gum AS v, COUNT(*) AS cnt FROM ' . $table . $where . ' GROUP BY gum ORDER BY gum');
+    // Force user-friendly gum condition ordering.
+    // Expected order: OG, PG, NG, NGAI (then anything else alphabetically).
+    $stmt = $pdo->prepare(
+        'SELECT gum AS v, COUNT(*) AS cnt ' .
+        'FROM ' . $table . $where . ' ' .
+        'GROUP BY gum ' .
+        'ORDER BY (CASE LOWER(gum) ' .
+            "WHEN 'og - original gum' THEN 1 " .
+            "WHEN 'pg - partial gum' THEN 2 " .
+            "WHEN 'ng - no gum' THEN 3 " .
+            "WHEN 'ngai - no gum as issued' THEN 4 " .
+            'ELSE 99 END), gum'
+    );
     $stmt->execute($params);
     $gums = [];
     foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
