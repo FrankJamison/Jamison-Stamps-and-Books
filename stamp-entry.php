@@ -9,7 +9,9 @@ function h(string $s): string {
 
 function normalize_count_3(string $raw): string {
     $raw = trim($raw);
-    if ($raw === '') return '001';
+    if ($raw === '') {
+        throw new RuntimeException('Count is required.');
+    }
 
     // Allow numeric input like "5" and normalize to "005".
     if (ctype_digit($raw)) {
@@ -83,9 +85,17 @@ try {
     $hasPriceCents = api_db_has_column($pdo, $tableName, 'price_cents');
 
     // Lookup existing stamp by composite key (country, scott, count).
-    if ($_SERVER['REQUEST_METHOD'] === 'GET' && $lookup['country'] !== '' && $lookup['scott'] !== '' && $lookup['count'] !== '') {
-        $lookupCount = normalize_count_3($lookup['count']);
-        $lookup['count'] = $lookupCount;
+    $didLookupAttempt = $_SERVER['REQUEST_METHOD'] === 'GET' && (
+        array_key_exists('country', $_GET) || array_key_exists('scott', $_GET) || array_key_exists('count', $_GET)
+    );
+    if ($didLookupAttempt) {
+        if ($lookup['country'] === '' || $lookup['scott'] === '' || $lookup['count'] === '') {
+            $error = 'To load a stamp, Country, Scott #, and Count are all required.';
+        }
+    }
+
+    if ($error === '' && $_SERVER['REQUEST_METHOD'] === 'GET' && $lookup['country'] !== '' && $lookup['scott'] !== '' && $lookup['count'] !== '') {
+        $lookup['count'] = normalize_count_3($lookup['count']);
 
         $table = '`' . $tableName . '`';
         $stmt = $pdo->prepare(
@@ -186,6 +196,45 @@ try {
             if (trim($description) === '') throw new RuntimeException('Description is required.');
             if ($location === '') throw new RuntimeException('Location is required.');
 
+            // Enforce unique location across all stamps.
+            // (Best-effort app-level protection; consider adding a UNIQUE index at the DB level too.)
+            $table = '`' . $tableName . '`';
+            $origCountry = '';
+            $origScott = '';
+            $origCount = '';
+            if ($mode === 'update') {
+                $origCountry = isset($_POST['orig_country']) ? trim((string)$_POST['orig_country']) : '';
+                $origScott = isset($_POST['orig_scott']) ? trim((string)$_POST['orig_scott']) : '';
+                $origCountRaw = isset($_POST['orig_count']) ? trim((string)$_POST['orig_count']) : '';
+                $origCount = normalize_count_3($origCountRaw);
+
+                if ($origCountry === '' || $origScott === '' || $origCount === '') {
+                    throw new RuntimeException('Missing original key values for update. Use the lookup form to load a stamp before editing.');
+                }
+            }
+
+            $conflictSql = 'SELECT country, scott, `count` FROM ' . $table . ' WHERE location = :location';
+            $conflictParams = [':location' => $location];
+            if ($mode === 'update') {
+                $conflictSql .= ' AND NOT (country = :orig_country AND scott = :orig_scott AND `count` = :orig_count)';
+                $conflictParams[':orig_country'] = $origCountry;
+                $conflictParams[':orig_scott'] = $origScott;
+                $conflictParams[':orig_count'] = $origCount;
+            }
+            $conflictSql .= ' LIMIT 1';
+            $stmt = $pdo->prepare($conflictSql);
+            $stmt->execute($conflictParams);
+            $conflict = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (is_array($conflict) && !empty($conflict)) {
+                $cCountry = (string)($conflict['country'] ?? '');
+                $cScott = (string)($conflict['scott'] ?? '');
+                $cCount = (string)($conflict['count'] ?? '');
+                $suffix = ($cCountry !== '' || $cScott !== '' || $cCount !== '')
+                    ? " (already used by {$cCountry} / {$cScott} / {$cCount})"
+                    : '';
+                throw new RuntimeException('Location must be unique.' . $suffix);
+            }
+
             $priceDecimal = normalize_price($values['price']);
 
             $cols = [
@@ -217,18 +266,7 @@ try {
                 $cols['paypal_id'] = $paypalId;
             }
 
-            $table = '`' . $tableName . '`';
-
             if ($mode === 'update') {
-                $origCountry = isset($_POST['orig_country']) ? trim((string)$_POST['orig_country']) : '';
-                $origScott = isset($_POST['orig_scott']) ? trim((string)$_POST['orig_scott']) : '';
-                $origCountRaw = isset($_POST['orig_count']) ? trim((string)$_POST['orig_count']) : '';
-                $origCount = normalize_count_3($origCountRaw);
-
-                if ($origCountry === '' || $origScott === '' || $origCount === '') {
-                    throw new RuntimeException('Missing original key values for update. Use the lookup form to load a stamp before editing.');
-                }
-
                 $setSql = implode(', ', array_map(fn($c) => '`' . $c . '` = :' . $c, array_keys($cols)));
                 $sql = 'UPDATE ' . $table . ' SET ' . $setSql . ' WHERE country = :orig_country AND scott = :orig_scott AND `count` = :orig_count';
                 $stmt = $pdo->prepare($sql);
