@@ -76,8 +76,8 @@ try {
     $grade = isset($_GET['grade']) ? trim((string)$_GET['grade']) : '';
     $sort = isset($_GET['sort']) ? trim((string)$_GET['sort']) : '';
     if ($sort === '') {
-        // Default site order: Scott number (low -> high).
-        $sort = 'scott-asc';
+        // Default site order: Newly Listed (newest first).
+        $sort = 'newest';
     }
 
     $pageSize = api_int_param('pageSize', 25, 1, 100);

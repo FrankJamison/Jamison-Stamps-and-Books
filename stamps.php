@@ -97,9 +97,9 @@
                                 <div>
                                     <label class="sr-only" for="sortOptions">Sort</label>
                                     <select id="sortOptions">
-                                        <option value="scott-asc" selected>Scott # (Low → High)</option>
+                                        <option value="newest" selected>Newly Listed</option>
+                                        <option value="scott-asc">Scott # (Low → High)</option>
                                         <option value="scott-desc">Scott # (High → Low)</option>
-                                        <option value="newest">Newly Listed</option>
                                         <option value="price-asc">Price (Low → High)</option>
                                         <option value="price-desc">Price (High → Low)</option>
                                     </select>

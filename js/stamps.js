@@ -777,9 +777,9 @@ function setSelectOptions(selectId, values) {
 
     if (isObjList) {
         list.forEach(item => {
-            const v = (item && typeof item === "object")
-                ? (item.value ?? item.v ?? "")
-                : item;
+            const v = (item && typeof item === "object") ?
+                (item.value ?? item.v ?? "") :
+                item;
             const val = (v ?? "").toString().trim();
             if (!val) return;
 
@@ -828,7 +828,7 @@ function getCurrentQueryState() {
         hinged: byId("hingedFilter")?.value || "",
         gum: byId("gumFilter")?.value || "",
         grade: byId("gradeFilter")?.value || "",
-        sort: byId("sortOptions")?.value || "scott-asc",
+        sort: byId("sortOptions")?.value || "newest",
     };
 }
 
