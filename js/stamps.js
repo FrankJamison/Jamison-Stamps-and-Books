@@ -198,9 +198,16 @@ function cartAddStamp(stamp) {
 
     if (cartHasId(cart, id)) return;
 
+    const fallbackPriceCents = Number.isFinite(Number(stamp?.priceCents)) ?
+        Number(stamp.priceCents) :
+        (Number.isFinite(Number(stamp?.price)) ? Math.round(Number(stamp.price) * 100) : null);
+
     cart.items.push({
         id,
-        qty: 1
+        qty: 1,
+        scott: (stamp?.scott ?? "").toString(),
+        condition: (stamp?.condition ?? "").toString(),
+        priceCents: fallbackPriceCents
     });
     saveCart(cart);
     renderLocalCart();
@@ -260,22 +267,29 @@ async function fetchStampSummariesByIds(ids) {
     const list = (ids || []).map(n => Number(n)).filter(n => Number.isFinite(n));
     if (list.length === 0) return new Map();
 
-    // Try dedicated endpoint first.
-    try {
-        const url = `${API_BASE}/cart-items.php?ids=${encodeURIComponent(list.join(","))}`;
-        const data = await fetchJson(url);
-        if (data && typeof data === "object" && Array.isArray(data.items)) {
-            const m = new Map();
-            data.items.forEach(it => {
-                if (!it) return;
-                const id = Number(it.id);
-                if (!Number.isFinite(id)) return;
-                m.set(id, it);
-            });
-            return m;
+    const query = `ids=${encodeURIComponent(list.join(","))}`;
+    const candidates = [
+        `${API_BASE}/cart-items.php?${query}`,
+        `/api/cart-items.php?${query}`,
+        `api/cart-items.php?${query}`
+    ];
+
+    for (const url of candidates) {
+        try {
+            const data = await fetchJson(url);
+            if (data && typeof data === "object" && Array.isArray(data.items)) {
+                const m = new Map();
+                data.items.forEach(it => {
+                    if (!it) return;
+                    const id = Number(it.id);
+                    if (!Number.isFinite(id)) return;
+                    m.set(id, it);
+                });
+                return m;
+            }
+        } catch {
+            // try next candidate URL
         }
-    } catch {
-        // ignore and fall back
     }
 
     // Fallback: no summaries available.
@@ -295,6 +309,7 @@ async function renderLocalCart() {
     const cart = loadCart();
     const ids = cart.items.map(it => Number(it.id)).filter(n => Number.isFinite(n));
     const summaries = await fetchStampSummariesByIds(ids);
+    let cartMutated = false;
 
     // Render items
     if (itemsEl) itemsEl.innerHTML = "";
@@ -316,6 +331,22 @@ async function renderLocalCart() {
         const id = Number(it.id);
         const s = summaries.get(id);
 
+        // Self-heal older cart entries that only stored id/qty.
+        if (s && it) {
+            const nextScott = ((s.scott ?? it.scott) || "").toString();
+            const nextCondition = ((s.condition ?? it.condition) || "").toString();
+            const nextPriceCents = Number.isFinite(Number(s.priceCents)) ?
+                Number(s.priceCents) :
+                (Number.isFinite(Number(it.priceCents)) ? Number(it.priceCents) : null);
+
+            if (it.scott !== nextScott || it.condition !== nextCondition || it.priceCents !== nextPriceCents) {
+                it.scott = nextScott;
+                it.condition = nextCondition;
+                it.priceCents = nextPriceCents;
+                cartMutated = true;
+            }
+        }
+
         const row = document.createElement("div");
         row.className = "local-cart-item";
         row.setAttribute("role", "listitem");
@@ -323,17 +354,21 @@ async function renderLocalCart() {
         const label = document.createElement("div");
         label.className = "local-cart-item-label";
 
-        if (s) {
-            const priceCents = Number(s.priceCents);
+        if (s || it) {
+            const priceCents = Number.isFinite(Number(s?.priceCents)) ?
+                Number(s.priceCents) :
+                (Number.isFinite(Number(it?.priceCents)) ? Number(it.priceCents) : Number.NaN);
             if (Number.isFinite(priceCents)) totalCents += priceCents;
 
-            const scott = (s.scott || "").toString();
-            const cond = (s.condition || "").toString();
+            const scott = ((s?.scott ?? it?.scott) || "").toString();
+            const cond = ((s?.condition ?? it?.condition) || "").toString();
             label.textContent = `Scott ${scott}${cond ? " — " + cond : ""}`;
 
             const price = document.createElement("div");
             price.className = "local-cart-item-price";
-            price.textContent = `$${moneyFromCents(priceCents)}`;
+            price.textContent = Number.isFinite(priceCents) ?
+                `$${moneyFromCents(priceCents)}` :
+                "Price unavailable";
             row.appendChild(price);
         } else {
             label.textContent = `Item #${id}`;
@@ -352,6 +387,10 @@ async function renderLocalCart() {
     });
 
     if (totalEl) totalEl.textContent = `$${moneyFromCents(totalCents)}`;
+
+    if (cartMutated) {
+        saveCart(cart);
+    }
 
     if (checkoutBtn) {
         checkoutBtn.disabled = false;
@@ -397,10 +436,26 @@ function getStampImageUrlCandidates(stamp, side /* 'front' | 'back' */ ) {
     const sideTitle = sideLower === "back" ? "Back" : "Front";
 
     const folder = encodeURIComponent(country);
-    const names = [
-        `${scott}-${count}-${sideLower}.jpg`,
-        `${scott} - ${count} - ${sideTitle}.jpg`,
-    ];
+
+    // Some DB rows expose count as "2" while image files are named with "002".
+    const countVariants = [];
+    const pushCountVariant = (v) => {
+        const s = String(v || "").trim();
+        if (!s || countVariants.includes(s)) return;
+        countVariants.push(s);
+    };
+    pushCountVariant(count);
+    const countNum = Number.parseInt(count, 10);
+    if (Number.isFinite(countNum) && countNum >= 0) {
+        pushCountVariant(String(countNum));
+        pushCountVariant(String(countNum).padStart(3, "0"));
+    }
+
+    const names = [];
+    countVariants.forEach((cv) => {
+        names.push(`${scott}-${cv}-${sideLower}.jpg`);
+        names.push(`${scott} - ${cv} - ${sideTitle}.jpg`);
+    });
 
     return names.map(name => {
         const relPath = `${folder}/${encodeURIComponent(name)}`;
